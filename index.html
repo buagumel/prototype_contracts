@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Management System</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="display: none;">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-file-contract"></i>
+                <span>ContractHub</span>
+            </div>
+            <div class="nav-user">
+                <span id="welcomeText"></span>
+                <button id="logoutBtn" class="btn btn-outline">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-file-contract"></i>
+                <h2>ContractHub</h2>
+                <p>Manage your contracts efficiently</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="userType">User Type</label>
+                    <select id="userType" name="userType" required>
+                        <option value="">Select User Type</option>
+                        <option value="admin">Admin</option>
+                        <option value="contractor">Contractor</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+            <div id="loginError" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboardPage" class="dashboard-container" style="display: none;">
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="dashboard-content">
+            <div class="dashboard-header">
+                <h1>Admin Dashboard</h1>
+                <div class="dashboard-actions">
+                    <button id="addContractorBtn" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Add Contractor
+                    </button>
+                    <button id="addContractBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Contract
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search contractors or projects...">
+                    <select id="statusFilter" onchange="handleStatusFilter(event)">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>Contractors</h3>
+                    <div id="contractorsList" class="items-list"></div>
+                </div>
+                <div class="dashboard-card">
+                    <h3>All Contracts</h3>
+                    <div id="allContractsList" class="items-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contractor Dashboard -->
+        <div id="contractorDashboard" class="dashboard-content">
+            <div class="dashboard-header">
+                <div class="contractor-welcome">
+                    <div id="contractorProfileSection" class="contractor-profile-dashboard"></div>
+                    <h1>My Contracts</h1>
+                </div>
+                <div class="dashboard-actions">
+                    <button id="addMyContractBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add New Contract
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-filter"></i>
+                    <select id="contractorStatusFilter" onchange="handleStatusFilter(event)">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="myContractsList" class="contracts-grid"></div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Contractor Modal -->
+    <div id="addContractorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Contractor</h3>
+                <span class="close" data-modal="addContractorModal">&times;</span>
+            </div>
+            <form id="addContractorForm">
+                <div class="form-group">
+                    <label for="contractorName">Name</label>
+                    <input type="text" id="contractorName" required>
+                </div>
+                <div class="form-group">
+                    <label for="contractorEmail">Email</label>
+                    <input type="email" id="contractorEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="contractorPhone">Phone</label>
+                    <input type="tel" id="contractorPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="contractorSpecialty">Specialty</label>
+                    <input type="text" id="contractorSpecialty" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" data-modal="addContractorModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Contractor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Contract Modal -->
+    <div id="addContractModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Contract</h3>
+                <span class="close" data-modal="addContractModal">&times;</span>
+            </div>
+            <form id="addContractForm">
+                <div class="form-group">
+                    <label for="contractTitle">Title</label>
+                    <input type="text" id="contractTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="contractDescription">Description</label>
+                    <textarea id="contractDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="contractContractor">Contractor</label>
+                    <select id="contractContractor" required>
+                        <option value="">Select Contractor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="contractStartDate">Start Date</label>
+                    <input type="date" id="contractStartDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="contractEndDate">End Date</label>
+                    <input type="date" id="contractEndDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="contractValue">Contract Value (₦)</label>
+                    <input type="number" id="contractValue" min="0" step="0.01" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" data-modal="addContractModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Contract</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Contractor Details Modal -->
+    <div id="contractorDetailsModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>Contractor Details</h3>
+                <span class="close" data-modal="contractorDetailsModal">&times;</span>
+            </div>
+            <div id="contractorDetailsContent"></div>
+        </div>
+    </div>
+
+    <!-- Contract Details Modal -->
+    <div id="contractDetailsModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>Contract Details</h3>
+                <span class="close" data-modal="contractDetailsModal">&times;</span>
+            </div>
+            <div id="contractDetailsContent"></div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
