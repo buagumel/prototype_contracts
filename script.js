@@ -387,6 +387,12 @@ function createMyContractElement(contract) {
 
 // Modal Functions
 function openModal(modalId) {
+    // Check if user is logged in
+    if (!currentUser) {
+        showLogin();
+        showNotification('Session expired. Please log in again.', 'error');
+        return;
+    }
     // Only admin can open contract modal
     if (modalId === 'addContractModal' && currentUser.type !== 'admin') {
         showNotification('Only administrators can create contracts!', 'error');
